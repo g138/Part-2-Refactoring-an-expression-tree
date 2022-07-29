@@ -1,4 +1,5 @@
 const assert = require("assert");
+const math = require('mathjs');
 
 const Node = (operator, value, left, right) => {
   return {
@@ -12,7 +13,11 @@ const Node = (operator, value, left, right) => {
 
 // using recursion to get the string expression
 // instaed of using switch case use the operator chan as it is 
-const toString = function (tree) {
+const toString = (tree) => {
+	if (tree === null || tree?.operator === null) {
+		return 'Incorrect Node input';
+	}
+
 	if (tree.operator === '') {
 	  return tree.value.toString();
 	}
@@ -22,20 +27,16 @@ const toString = function (tree) {
 	})`;
 };
 
-const result = function (tree) {
-	switch (tree.operator) {
-	  case '+':
-		return result(tree.left) + result(tree.right);
-	  case '-':
-		return result(tree.left) - result(tree.right);
-	  case 'x':
-		return result(tree.left) * result(tree.right);
-	  case '÷':
-		return result(tree.left) / result(tree.right);
-	  default:
-		return tree.value;
+// Use toString function to get the expression
+// then replace sthe char 'x' and '÷' as they are not read by compiler while performing calculation
+// the use math library to evalute the result
+const result = (tree) => {
+	if (tree === null || tree?.operator === null) {
+		return 'Incorrect Node input';
 	}
-  };
+
+	return math.evaluate(toString(tree)?.replace('x', '*')?.replace('÷', '/'));
+};
 
 const tree = Node(
   "÷",
@@ -54,7 +55,21 @@ const tree = Node(
   Node("", 6, null, null)
 );
 
-console.log(result(tree), toString(tree));
+try {
+	console.log(result(tree), toString(tree));
+} catch (error) {
+	console.log(error);
+}
 
-assert.strictEqual('((7 + ((3 - 2) x 5)) ÷ 6)', toString(tree));
-assert.strictEqual(2, result(tree));
+try {
+	assert.strictEqual('((7 + ((3 - 2) x 5)) ÷ 6)', toString(tree));
+} catch (error) {
+	console.log(error);
+}
+  
+try {
+	assert.strictEqual(2, result(tree));
+} catch (error) {
+	console.log(error);
+}
+  
