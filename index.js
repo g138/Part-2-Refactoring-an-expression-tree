@@ -16,15 +16,6 @@ const Node = (operator, value, left, right) => {
     }
   };
 
-  // using recursion to get the string expression
-  // instaed of using switch case use the operator chan as it is 
-  const toString = function () {
-    if (operator === '') {
-		return value.toString();
-	  }
-  
-	  return `(${left.toString() + ' ' + operator + ' ' + right.toString()})`;
-  };
 
   return {
     operator,
@@ -34,6 +25,19 @@ const Node = (operator, value, left, right) => {
     result,
     toString
   };
+};
+
+
+// using recursion to get the string expression
+// instaed of using switch case use the operator chan as it is 
+const toString = function (tree) {
+	if (tree.operator === '') {
+	  return tree.value.toString();
+	}
+  
+	return `(${
+	  toString(tree.left) + ' ' + tree.operator + ' ' + toString(tree.right)
+	})`;
 };
 
 const tree = Node(
@@ -53,7 +57,7 @@ const tree = Node(
   Node("", 6, null, null)
 );
 
-console.log(tree.toString())
+console.log(tree.result(), toString(tree));
 
-assert.strictEqual("((7 + ((3 - 2) x 5)) ÷ 6)", tree.toString());
+assert.strictEqual('((7 + ((3 - 2) x 5)) ÷ 6)', toString(tree));
 assert.strictEqual(2, tree.result());
